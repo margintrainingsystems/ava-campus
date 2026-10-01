@@ -1,0 +1,71 @@
+<!--
+  Plantilla del email de invitación, compartida por el CRM y el Campus (el proyecto de Supabase es uno solo).
+  Dónde va: Supabase → Authentication → Emails → Templates → "Invite user".
+  Asunto sugerido (sirve para los dos casos): Tu acceso a AVA · Your AVA access · Seu acesso à AVA
+
+  Cómo elige el texto: las invitaciones del Campus guardan el idioma del alumno en la cuenta
+  (locale: es, en o pt); las del equipo del CRM no lo guardan. Sin idioma = invitación al equipo.
+  La misma copia está en ava-crm/supabase/templates/invitacion.html: si cambiás una, cambiá la otra.
+-->
+<div style="background:#16171B;padding:32px 16px;font-family:Manrope,Arial,sans-serif;color:#F4F5F3;">
+  <div style="max-width:480px;margin:0 auto;background:#1D1E23;border:1px solid #2E3038;border-radius:10px;padding:28px;">
+    <p style="margin:0 0 20px;font-size:20px;font-weight:800;letter-spacing:0.02em;">AVA</p>
+{{ if .Data.locale }}{{ if eq .Data.locale "en" }}
+    <p style="margin:0 0 16px;font-size:16px;line-height:1.6;">Hi{{ if .Data.first_name }} {{ .Data.first_name }}{{ end }},</p>
+    <p style="margin:0 0 16px;font-size:16px;line-height:1.6;">
+      Welcome to AVA! Your access to the Campus is ready. Create your password to start studying:
+    </p>
+    <p style="margin:0 0 24px;">
+      <a href="{{ .ConfirmationURL }}" style="display:inline-block;background:#12E086;color:#06341F;font-weight:700;text-decoration:none;padding:12px 22px;border-radius:999px;">Create my password</a>
+    </p>
+    <p style="margin:0 0 16px;font-size:14px;line-height:1.6;color:#9A9CA6;">
+      The link works only once and expires. If it expired, use "I forgot my password" on the Campus sign-in page.
+    </p>
+    <p style="margin:0;font-size:14px;line-height:1.6;color:#9A9CA6;">
+      If you weren't expecting this email, ignore it: no one can sign in with your address without this link.
+    </p>
+{{ else if eq .Data.locale "pt" }}
+    <p style="margin:0 0 16px;font-size:16px;line-height:1.6;">Olá{{ if .Data.first_name }}, {{ .Data.first_name }}{{ end }}!</p>
+    <p style="margin:0 0 16px;font-size:16px;line-height:1.6;">
+      Boas-vindas à AVA! Seu acesso ao Campus está pronto. Crie sua senha para começar a estudar:
+    </p>
+    <p style="margin:0 0 24px;">
+      <a href="{{ .ConfirmationURL }}" style="display:inline-block;background:#12E086;color:#06341F;font-weight:700;text-decoration:none;padding:12px 22px;border-radius:999px;">Criar minha senha</a>
+    </p>
+    <p style="margin:0 0 16px;font-size:14px;line-height:1.6;color:#9A9CA6;">
+      O link funciona uma única vez e expira. Se expirou, use "Esqueci minha senha" na página de entrada do Campus.
+    </p>
+    <p style="margin:0;font-size:14px;line-height:1.6;color:#9A9CA6;">
+      Se você não esperava este e-mail, ignore-o: ninguém consegue entrar com seu endereço sem este link.
+    </p>
+{{ else }}
+    <p style="margin:0 0 16px;font-size:16px;line-height:1.6;">Hola{{ if .Data.first_name }}, {{ .Data.first_name }}{{ end }}:</p>
+    <p style="margin:0 0 16px;font-size:16px;line-height:1.6;">
+      ¡Te damos la bienvenida a AVA! Tu acceso al Campus está listo. Creá tu contraseña para empezar a estudiar:
+    </p>
+    <p style="margin:0 0 24px;">
+      <a href="{{ .ConfirmationURL }}" style="display:inline-block;background:#12E086;color:#06341F;font-weight:700;text-decoration:none;padding:12px 22px;border-radius:999px;">Crear mi contraseña</a>
+    </p>
+    <p style="margin:0 0 16px;font-size:14px;line-height:1.6;color:#9A9CA6;">
+      El link sirve una sola vez y vence. Si venció, usá "Olvidé mi contraseña" en la pantalla de ingreso del Campus.
+    </p>
+    <p style="margin:0;font-size:14px;line-height:1.6;color:#9A9CA6;">
+      Si no esperabas este email, ignoralo: nadie puede entrar con tu dirección sin este link.
+    </p>
+{{ end }}{{ else }}
+    <p style="margin:0 0 16px;font-size:16px;line-height:1.6;">Hola:</p>
+    <p style="margin:0 0 16px;font-size:16px;line-height:1.6;">
+      Te sumaron al equipo de AVA. Para entrar al CRM, creá tu contraseña con este botón:
+    </p>
+    <p style="margin:0 0 24px;">
+      <a href="{{ .ConfirmationURL }}" style="display:inline-block;background:#12E086;color:#06341F;font-weight:700;text-decoration:none;padding:12px 22px;border-radius:999px;">Crear mi contraseña</a>
+    </p>
+    <p style="margin:0 0 16px;font-size:14px;line-height:1.6;color:#9A9CA6;">
+      El link sirve una sola vez y vence. Si venció, pedile a quien te invitó que te lo reenvíe.
+    </p>
+    <p style="margin:0;font-size:14px;line-height:1.6;color:#9A9CA6;">
+      Si no esperabas este email, ignoralo: nadie puede entrar con tu dirección sin este link.
+    </p>
+{{ end }}
+  </div>
+</div>

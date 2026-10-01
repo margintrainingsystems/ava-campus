@@ -1,0 +1,36 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# El Campus es una sola página: todas las rutas cargan index.html.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Seguridad para todo el Campus.
+# Content-Security-Policy: el navegador solo acepta código propio, estilos y fuentes de
+# Google Fonts, conexiones a Supabase y videos de YouTube (dominio sin cookies).
+# Si sumás otro servicio, agregá su dominio acá.
+# Referrer-Policy: YouTube necesita saber desde qué sitio se reproduce el video; sin eso,
+# los videos incrustados no cargan. Solo se envía el dominio, nunca la ruta.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-Robots-Tag = "noindex, nofollow"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Strict-Transport-Security = "max-age=31536000"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=()"
+    Cross-Origin-Opener-Policy = "same-origin"
+    Content-Security-Policy = "default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; frame-src https://www.youtube-nocookie.com; connect-src 'self' https://mryuhzpenzpyhfidwsup.supabase.co wss://mryuhzpenzpyhfidwsup.supabase.co; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
+
+# Los archivos con hash en el nombre no cambian nunca: el navegador los guarda un año.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

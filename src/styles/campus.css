@@ -1,0 +1,543 @@
+/* Estilos del Campus. Tokens en tokens.css (los mismos del sitio y del CRM).
+   Verde como color principal; los acentos de cada Máster, solo en detalles. */
+
+:root {
+  --page-max: 1120px;
+  --topbar-h: 64px;
+}
+
+.text-strong {
+  color: var(--text);
+}
+
+/* --- Marca --- */
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.brand-word {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.15rem;
+  letter-spacing: 0.02em;
+}
+.brand-product {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
+/* --- Barra superior --- */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(22, 23, 27, 0.96);
+  border-bottom: 1px solid var(--line-soft);
+}
+.topbar-inner {
+  max-width: var(--page-max);
+  margin: 0 auto;
+  min-height: var(--topbar-h);
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px 24px;
+  flex-wrap: wrap;
+}
+.topbar-nav {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+}
+.topbar-link {
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  transition: color var(--fast) var(--ease);
+}
+.topbar-link:hover {
+  color: var(--text);
+}
+.topbar-link.active {
+  color: var(--green);
+}
+.topbar-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+@media (max-width: 640px) {
+  .topbar-nav {
+    order: 3;
+    flex-basis: 100%;
+    margin-left: -12px;
+  }
+  .topbar-tools {
+    margin-left: auto;
+  }
+}
+
+/* --- Selector de idioma --- */
+.lang-select select {
+  width: auto;
+  min-height: 40px;
+  padding: 8px 12px;
+  background: var(--bg-raised);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-s);
+  font-size: 0.88rem;
+  cursor: pointer;
+}
+.lang-select-compact select {
+  border-radius: 999px;
+}
+
+/* --- Página --- */
+.page {
+  max-width: var(--page-max);
+  margin: 0 auto;
+  padding: 36px 16px 80px;
+}
+@media (min-width: 720px) {
+  .page {
+    padding: 48px 32px 96px;
+  }
+}
+.narrow {
+  max-width: 640px;
+}
+.back-link {
+  display: inline-block;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.back-link:hover {
+  color: var(--green);
+}
+.panel {
+  padding: 22px 20px;
+  background: var(--bg-raised);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-m);
+}
+.empty-state {
+  padding: 28px 20px;
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-m);
+  color: var(--text-muted);
+  text-align: center;
+}
+.tag {
+  display: inline-block;
+  padding: 1px 9px;
+  border-radius: 999px;
+  background: var(--bg-raised-2);
+  border: 1px solid var(--line);
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+.tag-done {
+  color: var(--green);
+  border-color: rgba(18, 224, 134, 0.35);
+}
+
+/* --- Progreso --- */
+.progress {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.progress-track {
+  height: 6px;
+  border-radius: 999px;
+  background: var(--bg-raised-2);
+  overflow: hidden;
+}
+.progress-fill {
+  display: block;
+  height: 100%;
+  background: var(--green);
+  border-radius: inherit;
+  transition: width var(--fast) var(--ease);
+}
+.progress-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* --- Mis cursos --- */
+.resume-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 22px 22px 20px;
+  background: var(--bg-raised);
+  border: 1px solid rgba(18, 224, 134, 0.35);
+  border-radius: var(--radius-m);
+  transition: border-color var(--fast) var(--ease);
+}
+.resume-card:hover {
+  border-color: var(--green);
+}
+.resume-eyebrow {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--green);
+}
+
+.group-head {
+  padding-left: 14px;
+  border-left: 3px solid var(--green);
+}
+.group-head > * + * {
+  margin-top: 6px;
+}
+.tone-accent-1 {
+  border-left-color: var(--accent-1);
+}
+.tone-accent-2 {
+  border-left-color: var(--accent-2);
+}
+.tone-accent-3 {
+  border-left-color: var(--accent-3);
+}
+
+.course-grid {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+  gap: 16px;
+}
+.course-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+  background: var(--bg-raised);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-m);
+  transition:
+    border-color var(--fast) var(--ease),
+    transform var(--fast) var(--ease);
+}
+.course-card:hover {
+  border-color: var(--line);
+  transform: translateY(-2px);
+}
+.course-card-locked .course-card-title,
+.course-card-locked .course-card-summary {
+  color: var(--text-muted);
+}
+.course-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-height: 0;
+}
+.course-card-tags:empty {
+  display: none;
+}
+.course-card-summary {
+  font-size: 0.92rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.course-card-foot {
+  margin-top: auto;
+  padding-top: 6px;
+  font-size: 0.86rem;
+}
+
+/* --- Curso --- */
+.course-actions {
+  display: grid;
+  gap: 16px;
+  align-items: center;
+  padding: 20px;
+  background: var(--bg-raised);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-m);
+}
+@media (min-width: 720px) {
+  .course-actions {
+    grid-template-columns: 1fr auto auto;
+  }
+}
+.course-done {
+  font-weight: 700;
+  color: var(--green);
+}
+
+.module-list,
+.lesson-list,
+.outline-modules,
+.outline-lessons,
+.resource-list {
+  list-style: none;
+  padding: 0;
+}
+.module-list > * + * {
+  margin-top: 28px;
+}
+.module-title {
+  font-family: var(--font-body);
+  font-size: 1.02rem;
+  font-weight: 800;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 10px;
+}
+.module-number {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+.lesson-list {
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-m);
+  overflow: hidden;
+}
+.lesson-list > li + li {
+  border-top: 1px solid var(--line-soft);
+}
+.lesson-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg-raised);
+  transition: background var(--fast) var(--ease);
+}
+.lesson-row:hover {
+  background: var(--bg-raised-2);
+}
+.lesson-row-title {
+  flex: 1;
+  min-width: 0;
+}
+.lesson-row-meta {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.lesson-check {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line);
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+.lesson-row-done .lesson-check,
+.outline-link .lesson-check:not(:empty) {
+  background: var(--green);
+  border-color: var(--green);
+  color: var(--green-ink);
+}
+
+/* --- Clase --- */
+.lesson-layout {
+  display: grid;
+  gap: 40px;
+}
+@media (min-width: 1000px) {
+  .lesson-layout {
+    grid-template-columns: minmax(0, 1fr) 300px;
+    align-items: start;
+  }
+  .lesson-outline {
+    position: sticky;
+    top: calc(var(--topbar-h) + 24px);
+    max-height: calc(100vh - var(--topbar-h) - 48px);
+    overflow-y: auto;
+  }
+}
+.video-frame {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border-radius: var(--radius-m);
+  overflow: hidden;
+  border: 1px solid var(--line-soft);
+}
+.video-frame iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.rich-text {
+  max-width: 68ch;
+}
+.rich-text > * + * {
+  margin-top: 14px;
+}
+.rich-text h2 {
+  margin-top: 28px;
+}
+.rich-text ul {
+  padding-left: 22px;
+}
+.rich-text li + li {
+  margin-top: 6px;
+}
+.resource-list > li + li {
+  margin-top: 8px;
+}
+.lesson-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 20px;
+  border-top: 1px solid var(--line-soft);
+}
+.lesson-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.lesson-outline {
+  padding: 18px 16px;
+  background: var(--bg-raised);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-m);
+}
+.lesson-outline > h2 {
+  margin-bottom: 12px;
+}
+.outline-modules > * + * {
+  margin-top: 16px;
+}
+.outline-module-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+.outline-link {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 7px 8px;
+  border-radius: var(--radius-s);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+.outline-link:hover {
+  background: var(--bg-raised-2);
+}
+.outline-link.is-current {
+  background: var(--bg-raised-2);
+  color: var(--green);
+  font-weight: 700;
+}
+
+/* --- Avisos flotantes (como en el CRM) --- */
+.toasts {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 1000;
+  width: max-content;
+  max-width: calc(100vw - 32px);
+}
+.toast {
+  padding: 12px 20px;
+  border-radius: 999px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-align: center;
+  background: var(--text);
+  color: var(--bg);
+  animation: toast-in var(--fast) var(--ease);
+}
+.toast-error {
+  background: var(--danger);
+  color: #2b0b0b;
+}
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+/* --- Pantallas de acceso --- */
+.auth-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+}
+.auth-card {
+  width: min(440px, 100%);
+  padding: 32px 28px;
+  background: var(--bg-raised);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-m);
+}
+.auth-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* --- Carga --- */
+.center-screen {
+  min-height: 100vh;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+.loading-inline {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  color: var(--text-muted);
+}
+.spinner {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+  border-top-color: var(--green);
+  animation: spin 800ms linear infinite;
+}
+.spinner-sm {
+  width: 16px;
+  height: 16px;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

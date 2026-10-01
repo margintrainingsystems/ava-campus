@@ -1,0 +1,7 @@
+# Configuración para la CLI de Supabase (supabase functions deploy, supabase db ...).
+# Mismo proyecto que el sitio, Núcleo y el CRM.
+project_id = "mryuhzpenzpyhfidwsup"
+
+[functions.campus-acceso]
+# La función verifica la sesión por su cuenta y el permiso lo revisa la base.
+verify_jwt = false

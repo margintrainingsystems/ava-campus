@@ -1,0 +1,35 @@
+/* Tokens de AVA. Los valores salen de css/base.css del sitio (aprendeconava). */
+:root {
+  --bg: #16171b;
+  --bg-raised: #1d1e23;
+  --bg-raised-2: #24252b;
+  --line: #2e3038;
+  --line-soft: #24252b;
+
+  --text: #f4f5f3;
+  --text-muted: #9a9ca6;
+  --text-faint: #82858e;
+
+  --green: #12e086;
+  --green-ink: #06341f;
+
+  /* Acentos: solo en detalles, nunca en fondos ni elementos dominantes. */
+  --accent-1: #4d8aff;
+  --accent-2: #9b8cff;
+  --accent-3: #e0a458;
+
+  --danger: #ff6b6b;
+  --white: #ffffff;
+
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'Manrope', sans-serif;
+
+  --radius-s: 6px;
+  --radius-m: 10px;
+
+  --ease: cubic-bezier(0.16, 0.84, 0.44, 1);
+  --fast: 220ms;
+
+  --sidebar-w: 248px;
+  color-scheme: dark;
+}

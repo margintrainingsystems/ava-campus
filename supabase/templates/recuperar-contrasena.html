@@ -1,0 +1,59 @@
+<!--
+  Plantilla del email para crear una contraseña nueva, compartida por el CRM, Núcleo y el Campus.
+  Dónde va: Supabase → Authentication → Emails → Templates → "Reset password".
+  Asunto sugerido: Tu link para crear una contraseña nueva en AVA
+
+  Los alumnos del Campus tienen su idioma guardado en la cuenta (locale): reciben el email en ese
+  idioma. Sin idioma guardado (equipo, Núcleo), sale en español, igual que antes.
+  La misma copia está en ava-crm/supabase/templates/recuperar-contrasena.html.
+-->
+<div style="background:#16171B;padding:32px 16px;font-family:Manrope,Arial,sans-serif;color:#F4F5F3;">
+  <div style="max-width:480px;margin:0 auto;background:#1D1E23;border:1px solid #2E3038;border-radius:10px;padding:28px;">
+    <p style="margin:0 0 20px;font-size:20px;font-weight:800;letter-spacing:0.02em;">AVA</p>
+{{ if .Data.locale }}{{ if eq .Data.locale "en" }}
+    <p style="margin:0 0 16px;font-size:16px;line-height:1.6;">Hi,</p>
+    <p style="margin:0 0 16px;font-size:16px;line-height:1.6;">
+      You asked to create a new password for your AVA account. Use this button:
+    </p>
+    <p style="margin:0 0 24px;">
+      <a href="{{ .ConfirmationURL }}" style="display:inline-block;background:#12E086;color:#06341F;font-weight:700;text-decoration:none;padding:12px 22px;border-radius:999px;">Create a new password</a>
+    </p>
+    <p style="margin:0;font-size:14px;line-height:1.6;color:#9A9CA6;">
+      If you didn't ask for this, ignore this email: your current password still works.
+    </p>
+{{ else if eq .Data.locale "pt" }}
+    <p style="margin:0 0 16px;font-size:16px;line-height:1.6;">Olá,</p>
+    <p style="margin:0 0 16px;font-size:16px;line-height:1.6;">
+      Você pediu para criar uma senha nova para sua conta da AVA. Use este botão:
+    </p>
+    <p style="margin:0 0 24px;">
+      <a href="{{ .ConfirmationURL }}" style="display:inline-block;background:#12E086;color:#06341F;font-weight:700;text-decoration:none;padding:12px 22px;border-radius:999px;">Criar uma senha nova</a>
+    </p>
+    <p style="margin:0;font-size:14px;line-height:1.6;color:#9A9CA6;">
+      Se você não pediu isso, ignore este e-mail: sua senha atual continua funcionando.
+    </p>
+{{ else }}
+    <p style="margin:0 0 16px;font-size:16px;line-height:1.6;">Hola:</p>
+    <p style="margin:0 0 16px;font-size:16px;line-height:1.6;">
+      Pediste crear una contraseña nueva para tu cuenta de AVA. Usá este botón:
+    </p>
+    <p style="margin:0 0 24px;">
+      <a href="{{ .ConfirmationURL }}" style="display:inline-block;background:#12E086;color:#06341F;font-weight:700;text-decoration:none;padding:12px 22px;border-radius:999px;">Crear una contraseña nueva</a>
+    </p>
+    <p style="margin:0;font-size:14px;line-height:1.6;color:#9A9CA6;">
+      Si no lo pediste, ignorá este email: tu contraseña actual sigue funcionando.
+    </p>
+{{ end }}{{ else }}
+    <p style="margin:0 0 16px;font-size:16px;line-height:1.6;">Hola:</p>
+    <p style="margin:0 0 16px;font-size:16px;line-height:1.6;">
+      Pediste crear una contraseña nueva para tu cuenta de AVA. Usá este botón:
+    </p>
+    <p style="margin:0 0 24px;">
+      <a href="{{ .ConfirmationURL }}" style="display:inline-block;background:#12E086;color:#06341F;font-weight:700;text-decoration:none;padding:12px 22px;border-radius:999px;">Crear una contraseña nueva</a>
+    </p>
+    <p style="margin:0;font-size:14px;line-height:1.6;color:#9A9CA6;">
+      Si no lo pediste, ignorá este email: tu contraseña actual sigue funcionando.
+    </p>
+{{ end }}
+  </div>
+</div>
