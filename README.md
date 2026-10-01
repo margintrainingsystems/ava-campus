@@ -46,7 +46,8 @@ El texto de una clase usa el mismo formato que los textos largos del sitio: reng
 | Interfaz | React 19 + TypeScript + Vite, igual que el CRM. Se publica en Netlify |
 | Datos y login | Supabase, proyecto `mryuhzpenzpyhfidwsup` |
 | Seguridad | RLS en cada tabla del Campus. Las clases solo llegan si la cuenta tiene acceso |
-| Invitaciones | Edge Function `campus-acceso`, que va a llamar el CRM al registrar un alta |
+| Invitaciones | Edge Function `campus-acceso`, que llama el CRM al registrar un alta |
+| Contenido | Se carga desde Núcleo → Cursos del Campus |
 | Textos de la interfaz | `src/i18n/es.ts`, `en.ts` y `pt.ts`. Una prueba revisa que los tres tengan las mismas claves |
 
 ```
@@ -114,7 +115,7 @@ Funciones:
 
 ## Edge Function `campus-acceso`
 
-Acción `invitar` con `subscription_id` (y opcionalmente `locale`: `es`, `en` o `pt`). La va a llamar el CRM después de registrar un alta.
+Acción `invitar` con `subscription_id` (y opcionalmente `locale`: `es`, `en` o `pt`). La llama el CRM al registrar un alta y con el botón "Invitar al Campus" de cada suscripción.
 
 - La base revisa el permiso: quien llama tiene que ser del equipo del CRM con "Gestionar suscripciones".
 - Si la persona ya tiene una cuenta activa en AVA, no manda nada: entra al Campus con su contraseña de siempre.
@@ -136,6 +137,8 @@ Se pegan a mano en Supabase → Authentication → Emails → Templates. Las cop
 
 - Migración aplicada en Supabase (versión `20261001005016`) y prueba de permisos con `FALLAS: 0`.
 - Edge Function `campus-acceso` publicada.
+- CRM: la invitación sale sola al registrar un alta, y se puede mandar o reenviar desde cada suscripción.
+- Núcleo: sección **Cursos del Campus** para cargar todo el contenido.
 
 ## Pendiente antes de abrir el Campus
 
@@ -152,6 +155,6 @@ Estos pasos se hacen desde los paneles de Netlify y Supabase; las herramientas d
 | Fase | Entrega |
 |---|---|
 | 1 | Acceso por suscripción, cursos, módulos, clases con video, materiales, progreso, tres idiomas. **Hecha**, falta publicar en Netlify |
-| 2 | Edición del contenido desde Núcleo e invitación desde el CRM |
+| 2 | Edición del contenido desde Núcleo (Cursos del Campus) e invitación desde el CRM. **Hecha** |
 | 3 | Certificados por curso y por Máster, con QR de verificación en el sitio |
 | 4 | Asistente virtual por curso y enlace a la comunidad de Discord por Máster |
