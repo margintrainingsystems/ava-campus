@@ -13,6 +13,9 @@
 // (window.location.assign) y el archivo baja con su nombre original.
 // Los errores traen un código (error) para que el Campus muestre su propio texto en el idioma de
 // la persona; el mensaje en español es para el registro.
+// Nunca dice si existe un archivo al que la persona no tiene acceso: un archivo de otro curso, uno
+// que ya no es material de ninguna clase y uno que no existe responden igual (sin_acceso). Ninguna
+// respuesta trae la ruta de otro archivo.
 
 import { createClient } from '@supabase/supabase-js'
 
@@ -28,7 +31,8 @@ const ALLOWED_ORIGINS = (Deno.env.get('CAMPUS_MATERIAL_ORIGINS') ?? `${CAMPUS_UR
 const BUCKET = 'campus-materiales'
 // Vida del link, en segundos. La fija esta función: quien llama no la puede cambiar.
 const LINK_SECONDS = 60
-// Mismo formato que campus_private.valid_material_path en la base.
+// Mismo formato que campus_private.valid_material_path en la base: PDF, Word (.docx), Excel (.xlsx),
+// PowerPoint (.pptx), CSV, PNG, JPG (.jpg o .jpeg, el mismo tipo image/jpeg) y texto.
 const PATH_RE =
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\.(pdf|xlsx|csv|docx|pptx|png|jpg|jpeg|txt)$/
 
@@ -60,6 +64,13 @@ function fail(origin: string | null, status: number, error: string, mensaje: str
   return reply(origin, status, { error, mensaje })
 }
 
+// Suma al link firmado el nombre con el que baja el archivo. No se usa la opción download de
+// createSignedUrl porque supabase-js codifica el nombre dos veces (URLSearchParams y después encodeURI
+// sobre el link entero): "Guía.pdf" bajaría como "Gu%C3%ADa.pdf". Acá se codifica una sola vez.
+function withDownloadName(signedUrl: string, fileName: string): string {
+  return `${signedUrl}${signedUrl.includes('?') ? '&' : '?'}download=${encodeURIComponent(fileName)}`
+}
+
 Deno.serve(async (req) => {
   const origin = req.headers.get('Origin')
 
@@ -72,40 +83,48 @@ Deno.serve(async (req) => {
   const token = (req.headers.get('Authorization') ?? '').replace(/^Bearer\s+/i, '')
   if (!token) return fail(origin, 401, 'sin_sesion', 'Tu sesión venció. Volvé a entrar.')
 
-  let body: Json
+  let path: string
   try {
-    body = (await req.json()) as Json
+    const parsed: unknown = await req.json()
+    const value = parsed && typeof parsed === 'object' ? (parsed as Json).path : undefined
+    path = typeof value === 'string' ? value : ''
   } catch {
     return fail(origin, 400, 'formato', 'La solicitud no tiene el formato esperado.')
   }
-  const path = typeof body.path === 'string' ? body.path : ''
   if (!PATH_RE.test(path)) return fail(origin, 400, 'formato', 'El archivo pedido no es válido.')
 
-  // 1. Acceso, con la sesión de quien llama: decide la base (campus_material_file).
-  const asCaller = createClient(SUPABASE_URL, ANON_KEY, {
-    auth: { persistSession: false, autoRefreshToken: false },
-    global: { headers: { Authorization: `Bearer ${token}` } },
-  })
-  const { data: userData, error: userError } = await asCaller.auth.getUser(token)
-  if (userError || !userData.user) return fail(origin, 401, 'sin_sesion', 'Tu sesión venció. Volvé a entrar.')
+  try {
+    // 1. Acceso, con la sesión de quien llama: decide la base (campus_material_file).
+    const asCaller = createClient(SUPABASE_URL, ANON_KEY, {
+      auth: { persistSession: false, autoRefreshToken: false },
+      global: { headers: { Authorization: `Bearer ${token}` } },
+    })
+    const { data: userData, error: userError } = await asCaller.auth.getUser(token)
+    if (userError || !userData.user) return fail(origin, 401, 'sin_sesion', 'Tu sesión venció. Volvé a entrar.')
 
-  const { data: fileName, error: accessError } = await asCaller.rpc('campus_material_file', { p_path: path })
-  if (accessError) return fail(origin, 500, 'base', 'No pudimos revisar el acceso. Probá de nuevo.')
-  if (typeof fileName !== 'string' || !fileName) {
-    return fail(origin, 403, 'sin_acceso', 'No tenés acceso a este material o ya no está disponible.')
+    const { data: fileName, error: accessError } = await asCaller.rpc('campus_material_file', { p_path: path })
+    if (accessError) {
+      console.error('No se pudo revisar el acceso al material', accessError.code, accessError.message)
+      return fail(origin, 500, 'base', 'No pudimos revisar el acceso. Probá de nuevo.')
+    }
+    if (typeof fileName !== 'string' || !fileName) {
+      return fail(origin, 403, 'sin_acceso', 'No tenés acceso a este material o ya no está disponible.')
+    }
+
+    // 2. Link de 60 segundos, firmado con la service_role (nunca sale de Supabase). Solo se llega acá
+    //    con un archivo que la base ya aprobó para esta persona.
+    const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
+      auth: { persistSession: false, autoRefreshToken: false },
+    })
+    const { data: signed, error: signError } = await admin.storage.from(BUCKET).createSignedUrl(path, LINK_SECONDS)
+    if (signError || !signed?.signedUrl) {
+      console.error('No se pudo firmar el link', path, signError?.message)
+      return fail(origin, 404, 'archivo', 'No encontramos el archivo. Avisale al equipo de AVA.')
+    }
+
+    return reply(origin, 200, { url: withDownloadName(signed.signedUrl, fileName), expires_in: LINK_SECONDS })
+  } catch (e) {
+    console.error('Error inesperado en campus-material', e instanceof Error ? e.message : String(e))
+    return fail(origin, 500, 'base', 'Algo falló de nuestro lado. Probá de nuevo en unos minutos.')
   }
-
-  // 2. Link de 60 segundos, firmado con la service_role (nunca sale de Supabase).
-  const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
-    auth: { persistSession: false, autoRefreshToken: false },
-  })
-  const { data: signed, error: signError } = await admin.storage
-    .from(BUCKET)
-    .createSignedUrl(path, LINK_SECONDS, { download: fileName })
-  if (signError || !signed?.signedUrl) {
-    console.error('No se pudo firmar el link', path, signError?.message)
-    return fail(origin, 404, 'archivo', 'No encontramos el archivo. Avisale al equipo de AVA.')
-  }
-
-  return reply(origin, 200, { url: signed.signedUrl, expires_in: LINK_SECONDS })
 })

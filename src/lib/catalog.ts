@@ -2,12 +2,26 @@
 // La base aplica las mismas reglas de acceso con RLS; acá solo deciden qué se muestra.
 import type { I18nText } from '../i18n/types'
 
+// Un acceso vigente: una suscripción paga o un acceso manual dado desde el CRM.
+//   until:   instante en que termina (fin exclusivo, el que compara la base). Null = sin vencimiento.
+//   lastDay: último día con acceso, en fecha de Buenos Aires (AAAA-MM-DD). Null = sin vencimiento.
+export type Access = {
+  kind: 'plan' | 'master'
+  masterId: string | null
+  until: string | null
+  lastDay: string | null
+  manual: boolean
+}
+
 export type Me = {
   firstName: string | null
   isStaff: boolean
+  // Todavía tiene la contraseña inicial que le dio el equipo: la base no le entrega clases hasta
+  // que la cambie.
+  mustChangePassword: boolean
   plan: boolean
   masterIds: string[]
-  accessUntil: string | null
+  accesses: Access[]
 }
 
 export type MasterInfo = {
@@ -106,4 +120,39 @@ export function formatDuration(seconds: number | null): string | null {
   const h = Math.floor(minutes / 60)
   const m = minutes % 60
   return m === 0 ? `${h} h` : `${h} h ${String(m).padStart(2, '0')} min`
+}
+
+// Último día con acceso (AAAA-MM-DD, fecha de Buenos Aires), como lo muestra el CRM. Usa last_day de
+// la base; si no llegara, lo calcula desde until (fin exclusivo) menos 1 ms. Null = sin vencimiento.
+export function accessLastDay(access: Access): string | null {
+  if (access.lastDay && /^\d{4}-\d{2}-\d{2}$/.test(access.lastDay)) return access.lastDay
+  if (!access.until) return null
+  const end = Date.parse(access.until)
+  if (Number.isNaN(end)) return null
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Argentina/Buenos_Aires',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(new Date(end - 1))
+  const part = (type: string) => parts.find((p) => p.type === type)?.value ?? ''
+  return `${part('year')}-${part('month')}-${part('day')}`
+}
+
+// Los accesos para "Mi cuenta": uno por producto (si hay una suscripción paga y un acceso manual
+// del mismo, se suman y vale el que termina más tarde; sin vencimiento gana), la anual primero.
+export function summarizeAccesses(accesses: Access[]): Access[] {
+  const byProduct = new Map<string, Access>()
+  for (const access of accesses) {
+    const key = access.kind === 'plan' ? 'plan' : `master:${access.masterId ?? ''}`
+    const current = byProduct.get(key)
+    if (!current || endsLater(access, current)) byProduct.set(key, access)
+  }
+  return [...byProduct.values()].sort((a, b) => (a.kind === b.kind ? 0 : a.kind === 'plan' ? -1 : 1))
+}
+
+function endsLater(a: Access, b: Access): boolean {
+  if (b.until === null) return false
+  if (a.until === null) return true
+  return Date.parse(a.until) > Date.parse(b.until)
 }

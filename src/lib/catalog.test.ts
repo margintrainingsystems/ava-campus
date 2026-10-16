@@ -1,4 +1,5 @@
 import {
+  accessLastDay,
   canOpenCourse,
   flattenLessons,
   formatDuration,
@@ -7,6 +8,8 @@ import {
   neighbors,
   nextLesson,
   percent,
+  summarizeAccesses,
+  type Access,
   type CourseSummary,
   type LessonItem,
   type MasterInfo,
@@ -17,9 +20,10 @@ import {
 const me = (over: Partial<Me> = {}): Me => ({
   firstName: null,
   isStaff: false,
+  mustChangePassword: false,
   plan: false,
   masterIds: [],
-  accessUntil: null,
+  accesses: [],
   ...over,
 })
 
@@ -131,5 +135,42 @@ describe('formatos', () => {
     expect(formatDuration(8 * 60)).toBe('8 min')
     expect(formatDuration(65 * 60)).toBe('1 h 05 min')
     expect(formatDuration(120 * 60)).toBe('2 h')
+  })
+})
+
+describe('accesos de "Mi cuenta"', () => {
+  const access = (over: Partial<Access>): Access => ({
+    kind: 'plan',
+    masterId: null,
+    until: null,
+    lastDay: null,
+    manual: false,
+    ...over,
+  })
+
+  it('usa el último día que manda la base', () => {
+    expect(accessLastDay(access({ until: '2026-11-07T03:00:00Z', lastDay: '2026-11-06' }))).toBe('2026-11-06')
+  })
+
+  it('si falta, lo calcula en hora de Buenos Aires desde el fin del acceso', () => {
+    // Termina el 07/11 a las 00:00 de Buenos Aires: el último día con acceso es el 06/11.
+    expect(accessLastDay(access({ until: '2026-11-07T03:00:00Z' }))).toBe('2026-11-06')
+    expect(accessLastDay(access({ until: '2026-11-07T03:00:01Z' }))).toBe('2026-11-07')
+    expect(accessLastDay(access({}))).toBeNull()
+  })
+
+  it('deja uno por producto, con el que termina más tarde, y la anual primero', () => {
+    const list = summarizeAccesses([
+      access({ kind: 'master', masterId: 'm1', until: '2027-01-01T03:00:00Z' }),
+      access({ kind: 'plan', until: '2026-12-01T03:00:00Z' }),
+      access({ kind: 'master', masterId: 'm1', until: '2027-06-01T03:00:00Z', manual: true }),
+      access({ kind: 'plan', until: null, manual: true }),
+      access({ kind: 'master', masterId: 'm2', until: '2027-02-01T03:00:00Z' }),
+    ])
+    expect(list.map((a) => [a.kind, a.masterId, a.until, a.manual])).toEqual([
+      ['plan', null, null, true],
+      ['master', 'm1', '2027-06-01T03:00:00Z', true],
+      ['master', 'm2', '2027-02-01T03:00:00Z', false],
+    ])
   })
 })
